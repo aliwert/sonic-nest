@@ -1,5 +1,6 @@
 package com.aliwert.controller.impl;
 
+import com.aliwert.dto.AuthResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -28,5 +29,11 @@ public class AuthenticationControllerImpl extends BaseController implements IAut
         return ok(authenticationService.register(req));
     }
 
-    
+    @PostMapping("/authenticate")
+    @Override
+    public RootEntity<AuthResponse> authenticate(@Valid @RequestBody AuthRequest req) {
+        return ok(authenticationService.authenticate(req));
+    }
+
+
 }
