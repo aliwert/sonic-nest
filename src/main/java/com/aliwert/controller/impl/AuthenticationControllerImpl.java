@@ -1,6 +1,7 @@
 package com.aliwert.controller.impl;
 
 import com.aliwert.dto.AuthResponse;
+import com.aliwert.dto.RefreshTokenReq;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -33,6 +34,12 @@ public class AuthenticationControllerImpl extends BaseController implements IAut
     @Override
     public RootEntity<AuthResponse> authenticate(@Valid @RequestBody AuthRequest req) {
         return ok(authenticationService.authenticate(req));
+    }
+
+    @PostMapping("/refreshtoken")
+    @Override
+    public RootEntity<AuthResponse> refreshToken(@Valid @RequestBody RefreshTokenReq req ){
+        return ok(authenticationService.refreshToken(req));
     }
 
 
