@@ -6,6 +6,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import com.aliwert.dto.AuthResponse;
+import com.aliwert.dto.RefreshTokenReq;
 import com.aliwert.exception.BaseException;
 import com.aliwert.exception.ErrorMessage;
 import com.aliwert.exception.MessageType;
@@ -92,5 +93,27 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
             throw new BaseException(new ErrorMessage(MessageType.USERNAME_OR_PASSWORD_INCORRECT, e.getMessage()));
         }
 
+    }
+
+
+    public boolean isTokenExpired(Date expiredDate) {
+        return new Date().before(expiredDate);
+    }
+
+    @Override
+    public AuthResponse refreshToken(RefreshTokenReq req) {
+        Optional<RefreshToken> opt = refreshTokenRepository.findByRefreshToken(req.getRefreshToken());
+        if(opt.isEmpty()) {
+            throw new BaseException(new ErrorMessage(MessageType.REFRESH_TOKEN_NOT_FOUND, req.getRefreshToken()));
+        }
+        if (!isTokenExpired(opt.get().getExpiredDate())) {
+            throw new BaseException(new ErrorMessage(MessageType.REFRESH_TOKEN_EXPIRED, req.getRefreshToken()));
+        }
+
+        User user = opt.get().getUser();
+        String generatedToken = jwtService.generateToken(user);
+        RefreshToken savedRefreshToken = refreshTokenRepository.save(createRefreshToken(user));
+
+        return new AuthResponse(generatedToken, savedRefreshToken.getRefreshToken());
     }
 }
