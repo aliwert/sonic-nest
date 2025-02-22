@@ -11,7 +11,8 @@ public enum MessageType {
     USERNAME_NOT_FOUND("4", "Username not found"),
     REFRESH_TOKEN_NOT_FOUND("5", "Refresh token not found"),
     USERNAME_OR_PASSWORD_INCORRECT("6", "Username or password incorrect"),
-    REFRESH_TOKEN_EXPIRED("7", "Refresh token expired");
+    REFRESH_TOKEN_EXPIRED("7", "Refresh token expired"),
+    NOT_FOUND("8", "Not found");
 
     private String code;
 
