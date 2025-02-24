@@ -6,7 +6,8 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class DtoGenreInsert {
+public class DtoArtistInsert {
     private String name;
-    private String description;
+    private String biography;
+    private String imageUrl;
 }

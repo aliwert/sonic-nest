@@ -1,10 +1,13 @@
 package com.aliwert.dto.update;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.time.LocalDate;
 import java.util.List;
 
-@Data
+@Getter
+@Setter
 public class DtoAlbumUpdate {
     private Long id;
     private String title;
