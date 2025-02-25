@@ -1,8 +1,10 @@
 package com.aliwert.dto.update;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
 public class DtoAudiobookUpdate {
     private Long id;
     private String title;

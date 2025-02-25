@@ -11,6 +11,7 @@ import com.aliwert.service.AudiobookService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.sql.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -64,7 +65,7 @@ public class AudiobookServiceImpl implements AudiobookService {
         dto.setPublisher(audiobook.getPublisher());
         dto.setDuration(audiobook.getDuration());
         dto.setImageUrl(audiobook.getImageUrl());
-        dto.setCreateTime(audiobook.getCreateTime());
+        dto.setCreateTime((Date) audiobook.getCreatedTime());
         dto.setChapterIds(audiobook.getChapters().stream().map(chapter -> chapter.getId()).collect(Collectors.toList()));
         return dto;
     }
