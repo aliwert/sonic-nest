@@ -55,7 +55,7 @@ public class AudiobookServiceImpl implements AudiobookService {
         audiobookRepository.deleteById(id);
     }
 
-    private DtoAudiobook convertToDto(Audiobook audiobook) {
+    public DtoAudiobook convertToDto(Audiobook audiobook) {
         DtoAudiobook dto = new DtoAudiobook();
         dto.setId(audiobook.getId());
         dto.setTitle(audiobook.getTitle());
