@@ -10,8 +10,7 @@ import com.aliwert.repository.ArtistRepository;
 import com.aliwert.service.ArtistService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
-import java.sql.Date;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -61,8 +60,24 @@ public class ArtistServiceImpl implements ArtistService {
         dto.setName(artist.getName());
         dto.setBiography(artist.getBiography());
         dto.setImageUrl(artist.getImageUrl());
-        dto.setCreateTime((Date) artist.getCreatedTime());
-        dto.setAlbumIds(artist.getAlbums().stream().map(album -> album.getId()).collect(Collectors.toList()));
+        if (artist.getCreatedTime() != null) {
+            if (artist.getCreatedTime() instanceof java.sql.Date) {
+                dto.setCreateTime((java.sql.Date) artist.getCreatedTime());
+            } else {
+                dto.setCreateTime(new java.sql.Date(artist.getCreatedTime().getTime()));
+            }
+        }
+        
+        // Check if albums collection is null before streaming
+        if (artist.getAlbums() != null) {
+            dto.setAlbumIds(artist.getAlbums().stream()
+                .map(album -> album.getId())
+                .collect(Collectors.toList()));
+        } else {
+            // Initialize with empty list if albums is null
+            dto.setAlbumIds(Collections.emptyList());
+        }
+        
         return dto;
     }
 

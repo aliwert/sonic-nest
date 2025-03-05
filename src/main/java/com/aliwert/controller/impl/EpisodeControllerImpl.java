@@ -8,6 +8,7 @@ import com.aliwert.dto.insert.DtoEpisodeInsert;
 import com.aliwert.dto.update.DtoEpisodeUpdate;
 import com.aliwert.service.EpisodeService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,7 +19,9 @@ import java.util.List;
 @RequiredArgsConstructor
 public class EpisodeControllerImpl extends BaseController implements IEpisodeController {
 
-    private final EpisodeService episodeService;
+
+    @Autowired
+    private EpisodeService episodeService;
 
     @GetMapping("/list")
     @Override

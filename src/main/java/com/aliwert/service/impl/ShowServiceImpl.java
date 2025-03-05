@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 public class ShowServiceImpl implements ShowService {
 
     private final ShowRepository showRepository;
-    private final EpisodeServiceImpl episodeService;
+
 
     @Override
     public List<DtoShow> getAllShows() {

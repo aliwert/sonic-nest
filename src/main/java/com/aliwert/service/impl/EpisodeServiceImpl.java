@@ -24,7 +24,7 @@ public class EpisodeServiceImpl implements EpisodeService {
 
     private final EpisodeRepository episodeRepository;
     private final ShowRepository showRepository;
-    private final ShowServiceImpl showService;
+    private final ShowServiceImpl showServiceImpl;
 
     @Override
     public List<DtoEpisode> getAllEpisodes() {
@@ -70,7 +70,7 @@ public class EpisodeServiceImpl implements EpisodeService {
         dto.setReleaseDate(episode.getReleaseDate());
         dto.setImageUrl(episode.getImageUrl());
         dto.setCreateTime((Date) episode.getCreatedTime());
-        dto.setShow(showService.convertToDto(episode.getShow()));
+        dto.setShow(showServiceImpl.convertToDto(episode.getShow()));
         return dto;
     }
 
