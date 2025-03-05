@@ -14,10 +14,11 @@ import com.aliwert.controller.RootEntity;
 import com.aliwert.dto.AuthRequest;
 import com.aliwert.dto.DtoUser;
 import com.aliwert.service.IAuthenticationService;
-
+import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
 
 @RestController
+@RequestMapping("/api/v1")
 public class AuthenticationControllerImpl extends BaseController implements IAuthenticationController {
 
     @Autowired
