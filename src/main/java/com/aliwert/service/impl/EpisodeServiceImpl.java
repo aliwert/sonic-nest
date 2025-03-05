@@ -13,6 +13,7 @@ import com.aliwert.service.EpisodeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.sql.Date;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -68,7 +69,7 @@ public class EpisodeServiceImpl implements EpisodeService {
         dto.setAudioUrl(episode.getAudioUrl());
         dto.setReleaseDate(episode.getReleaseDate());
         dto.setImageUrl(episode.getImageUrl());
-        dto.setCreateTime(episode.getCreatedTime());
+        dto.setCreateTime((Date) episode.getCreatedTime());
         dto.setShow(showService.convertToDto(episode.getShow()));
         return dto;
     }

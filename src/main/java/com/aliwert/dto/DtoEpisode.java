@@ -19,5 +19,5 @@ public class DtoEpisode extends DtoBaseEntity {
 
     private String imageUrl;
     
-    // private DtoShow show;
+    private DtoShow show;
 }

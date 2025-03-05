@@ -7,7 +7,7 @@ import lombok.Setter;
 @Setter
 public class DtoPlayerState extends DtoBaseEntity {
     private DtoUser user;
-    //private DtoTrack currentTrack;
+    private DtoTrack currentTrack;
     private Integer progressMs;
     private Boolean isPlaying;
     private Boolean shuffleState;

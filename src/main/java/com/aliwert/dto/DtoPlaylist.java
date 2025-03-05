@@ -11,5 +11,5 @@ public class DtoPlaylist extends DtoBaseEntity {
     private String description;
     private boolean isPublic;
     private DtoUser user;
-    //private List<DtoTrack> tracks;
+    private List<DtoTrack> tracks;
 }
