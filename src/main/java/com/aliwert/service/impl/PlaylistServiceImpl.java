@@ -1,7 +1,6 @@
 package com.aliwert.service.impl;
 
 import com.aliwert.dto.DtoPlaylist;
-import com.aliwert.dto.DtoTrack;
 import com.aliwert.dto.DtoUser;
 import com.aliwert.dto.insert.DtoPlaylistInsert;
 import com.aliwert.dto.update.DtoPlaylistUpdate;
@@ -17,7 +16,6 @@ import com.aliwert.service.PlaylistService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -73,38 +71,38 @@ public class PlaylistServiceImpl implements PlaylistService {
         updatePlaylistFromDto(playlist, dtoPlaylistUpdate);
         return convertToDto(playlistRepository.save(playlist));
     }
-    
+
     @Override
     public DtoPlaylist addTrackToPlaylist(Long playlistId, Long trackId) {
         Playlist playlist = playlistRepository.findById(playlistId)
                 .orElseThrow(() -> new RuntimeException(new ErrorMessage(MessageType.NOT_FOUND, "Playlist").prepareErrorMessage()));
         Track track = trackRepository.findById(trackId)
                 .orElseThrow(() -> new RuntimeException(new ErrorMessage(MessageType.NOT_FOUND, "Track").prepareErrorMessage()));
-        
+
         if (playlist.getTracks() == null) {
             playlist.setTracks(new ArrayList<>());
         }
-        
+
         if (!playlist.getTracks().contains(track)) {
             playlist.getTracks().add(track);
             playlistRepository.save(playlist);
         }
-        
+
         return convertToDto(playlist);
     }
-    
+
     @Override
     public DtoPlaylist removeTrackFromPlaylist(Long playlistId, Long trackId) {
         Playlist playlist = playlistRepository.findById(playlistId)
                 .orElseThrow(() -> new RuntimeException(new ErrorMessage(MessageType.NOT_FOUND, "Playlist").prepareErrorMessage()));
         Track track = trackRepository.findById(trackId)
                 .orElseThrow(() -> new RuntimeException(new ErrorMessage(MessageType.NOT_FOUND, "Track").prepareErrorMessage()));
-        
+
         if (playlist.getTracks() != null) {
             playlist.getTracks().remove(track);
             playlistRepository.save(playlist);
         }
-        
+
         return convertToDto(playlist);
     }
 
@@ -119,31 +117,48 @@ public class PlaylistServiceImpl implements PlaylistService {
         dto.setName(playlist.getName());
         dto.setDescription(playlist.getDescription());
         dto.setPublic(playlist.isPublic());
-        dto.setCreateTime((Date) playlist.getCreatedTime());
-        
+
+        // Handle creation time safely
+        if (playlist.getCreatedTime() != null) {
+            if (playlist.getCreatedTime() instanceof java.sql.Date) {
+                dto.setCreateTime((java.sql.Date) playlist.getCreatedTime());
+            } else {
+                dto.setCreateTime(new java.sql.Date(playlist.getCreatedTime().getTime()));
+            }
+        }
+
         // Convert user to DTO
         if (playlist.getUser() != null) {
             dto.setUser(convertUserToDto(playlist.getUser()));
         }
-        
+
         // convert tracks to dto
         if (playlist.getTracks() != null) {
             dto.setTracks(playlist.getTracks().stream()
                     .map(trackService::convertToDto)
                     .collect(Collectors.toList()));
         }
-        
+
         return dto;
     }
 
     private DtoUser convertUserToDto(User user) {
         if (user == null) return null;
-        
+
         DtoUser dtoUser = new DtoUser();
         dtoUser.setId(user.getId());
         dtoUser.setUsername(user.getUsername());
-        // don t set pass, security problems
-        dtoUser.setCreateTime((Date) user.getCreatedTime());
+        // don't set password for security reasons
+
+        // Handle creation time safely
+        if (user.getCreatedTime() != null) {
+            if (user.getCreatedTime() instanceof java.sql.Date) {
+                dtoUser.setCreateTime((java.sql.Date) user.getCreatedTime());
+            } else {
+                dtoUser.setCreateTime(new java.sql.Date(user.getCreatedTime().getTime()));
+            }
+        }
+
         return dtoUser;
     }
 
@@ -152,31 +167,31 @@ public class PlaylistServiceImpl implements PlaylistService {
             playlist.setName(insert.getName());
             playlist.setDescription(insert.getDescription());
             playlist.setPublic(insert.isPublic());
-            
+
             // set user
             User user = userRepository.findById(insert.getUserId())
                     .orElseThrow(() -> new RuntimeException(new ErrorMessage(MessageType.NOT_FOUND, "User").prepareErrorMessage()));
             playlist.setUser(user);
-            
+
             // set tracks if provided
             if (insert.getTrackIds() != null && !insert.getTrackIds().isEmpty()) {
                 List<Track> tracks = trackRepository.findAllById(insert.getTrackIds());
                 playlist.setTracks(tracks);
             }
-            
+
         } else if (dto instanceof DtoPlaylistUpdate update) {
             playlist.setName(update.getName());
             playlist.setDescription(update.getDescription());
             playlist.setPublic(update.isPublic());
-            
+
             // update user if provided
             if (update.getUserId() != null) {
                 User user = userRepository.findById(update.getUserId())
                         .orElseThrow(() -> new RuntimeException(new ErrorMessage(MessageType.NOT_FOUND, "User").prepareErrorMessage()));
                 playlist.setUser(user);
             }
-            
-            // update tracks if provided
+
+            // update tracks if not null
             if (update.getTrackIds() != null) {
                 List<Track> tracks = trackRepository.findAllById(update.getTrackIds());
                 playlist.setTracks(tracks);

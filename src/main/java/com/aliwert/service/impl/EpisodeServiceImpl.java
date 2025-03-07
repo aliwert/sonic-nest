@@ -69,25 +69,38 @@ public class EpisodeServiceImpl implements EpisodeService {
         dto.setAudioUrl(episode.getAudioUrl());
         dto.setReleaseDate(episode.getReleaseDate());
         dto.setImageUrl(episode.getImageUrl());
-        dto.setCreateTime((Date) episode.getCreatedTime());
-        dto.setShow(showServiceImpl.convertToDto(episode.getShow()));
+
+        // Handle creation time safely
+        if (episode.getCreatedTime() != null) {
+            if (episode.getCreatedTime() instanceof java.sql.Date) {
+                dto.setCreateTime((java.sql.Date) episode.getCreatedTime());
+            } else {
+                dto.setCreateTime(new java.sql.Date(episode.getCreatedTime().getTime()));
+            }
+        }
+
+        // Handle show reference safely
+        if (episode.getShow() != null) {
+            dto.setShow(showServiceImpl.convertToDto(episode.getShow()));
+        }
+
         return dto;
     }
 
     private void updateEpisodeFromDto(Episode episode, Object dto) {
         if (dto instanceof DtoEpisodeInsert insert) {
-            updateEpisodeFields(episode, insert.getTitle(), insert.getDescription(), 
-                insert.getDuration(), insert.getAudioUrl(), insert.getReleaseDate(), 
-                insert.getImageUrl(), insert.getShowId());
+            updateEpisodeFields(episode, insert.getTitle(), insert.getDescription(),
+                    insert.getDuration(), insert.getAudioUrl(), insert.getReleaseDate(),
+                    insert.getImageUrl(), insert.getShowId());
         } else if (dto instanceof DtoEpisodeUpdate update) {
-            updateEpisodeFields(episode, update.getTitle(), update.getDescription(), 
-                update.getDuration(), update.getAudioUrl(), update.getReleaseDate(), 
-                update.getImageUrl(), update.getShowId());
+            updateEpisodeFields(episode, update.getTitle(), update.getDescription(),
+                    update.getDuration(), update.getAudioUrl(), update.getReleaseDate(),
+                    update.getImageUrl(), update.getShowId());
         }
     }
 
-    private void updateEpisodeFields(Episode episode, String title, String description, 
-            Integer duration, String audioUrl, LocalDateTime releaseDate, String imageUrl, Long showId) {
+    private void updateEpisodeFields(Episode episode, String title, String description,
+                                     Integer duration, String audioUrl, LocalDateTime releaseDate, String imageUrl, Long showId) {
         episode.setTitle(title);
         episode.setDescription(description);
         episode.setDuration(duration);
@@ -95,8 +108,11 @@ public class EpisodeServiceImpl implements EpisodeService {
         episode.setReleaseDate(releaseDate);
         episode.setImageUrl(imageUrl);
 
-        Show show = showRepository.findById(showId)
-                .orElseThrow(() -> new RuntimeException(new ErrorMessage(MessageType.NOT_FOUND, "Show").prepareErrorMessage()));
-        episode.setShow(show);
+        // Handle show reference safely
+        if (showId != null) {
+            Show show = showRepository.findById(showId)
+                    .orElseThrow(() -> new RuntimeException(new ErrorMessage(MessageType.NOT_FOUND, "Show").prepareErrorMessage()));
+            episode.setShow(show);
+        }
     }
 }

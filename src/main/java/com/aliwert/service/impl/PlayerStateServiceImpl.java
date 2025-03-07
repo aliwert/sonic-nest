@@ -16,7 +16,6 @@ import com.aliwert.service.PlayerStateService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.sql.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -27,7 +26,6 @@ public class PlayerStateServiceImpl implements PlayerStateService {
     private final PlayerStateRepository playerStateRepository;
     private final UserRepository userRepository;
     private final TrackRepository trackRepository;
-    private final AuthenticationServiceImpl userService;
     private final TrackServiceImpl trackService;
 
     @Override
@@ -59,7 +57,7 @@ public class PlayerStateServiceImpl implements PlayerStateService {
                 throw new RuntimeException(new ErrorMessage(MessageType.ALREADY_EXISTS, "PlayerState for user").prepareErrorMessage());
             }
         });
-        
+
         PlayerState playerState = new PlayerState();
         updatePlayerStateFromDto(playerState, dtoPlayerStateInsert);
         return convertToDto(playerStateRepository.save(playerState));
@@ -90,40 +88,58 @@ public class PlayerStateServiceImpl implements PlayerStateService {
         dto.setShuffleState(playerState.getShuffleState());
         dto.setRepeatState(playerState.getRepeatState());
         dto.setVolume(playerState.getVolume());
-        dto.setCreateTime((Date) playerState.getCreatedTime());
+
+        // Handle creation time safely
+        if (playerState.getCreatedTime() != null) {
+            if (playerState.getCreatedTime() instanceof java.sql.Date) {
+                dto.setCreateTime((java.sql.Date) playerState.getCreatedTime());
+            } else {
+                dto.setCreateTime(new java.sql.Date(playerState.getCreatedTime().getTime()));
+            }
+        }
+
         return dto;
     }
-    
+
     private DtoUser convertUserToDto(User user) {
         if (user == null) return null;
-        
+
         DtoUser dtoUser = new DtoUser();
         dtoUser.setId(user.getId());
         dtoUser.setUsername(user.getUsername());
         // Don't set password in DTO
-        dtoUser.setCreateTime((Date) user.getCreatedTime());
+
+        // Handle creation time safely
+        if (user.getCreatedTime() != null) {
+            if (user.getCreatedTime() instanceof java.sql.Date) {
+                dtoUser.setCreateTime((java.sql.Date) user.getCreatedTime());
+            } else {
+                dtoUser.setCreateTime(new java.sql.Date(user.getCreatedTime().getTime()));
+            }
+        }
+
         return dtoUser;
     }
 
     private void updatePlayerStateFromDto(PlayerState playerState, Object dto) {
         if (dto instanceof DtoPlayerStateInsert insert) {
-            updatePlayerStateFields(playerState, insert.getUserId(), insert.getCurrentTrackId(), 
-                insert.getProgressMs(), insert.getIsPlaying(), insert.getShuffleState(), 
-                insert.getRepeatState(), insert.getVolume());
+            updatePlayerStateFields(playerState, insert.getUserId(), insert.getCurrentTrackId(),
+                    insert.getProgressMs(), insert.getIsPlaying(), insert.getShuffleState(),
+                    insert.getRepeatState(), insert.getVolume());
         } else if (dto instanceof DtoPlayerStateUpdate update) {
-            updatePlayerStateFields(playerState, update.getUserId(), update.getCurrentTrackId(), 
-                update.getProgressMs(), update.getIsPlaying(), update.getShuffleState(), 
-                update.getRepeatState(), update.getVolume());
+            updatePlayerStateFields(playerState, update.getUserId(), update.getCurrentTrackId(),
+                    update.getProgressMs(), update.getIsPlaying(), update.getShuffleState(),
+                    update.getRepeatState(), update.getVolume());
         }
     }
 
-    private void updatePlayerStateFields(PlayerState playerState, Long userId, Long trackId, 
-            Integer progressMs, Boolean isPlaying, Boolean shuffleState, String repeatState, Integer volume) {
-        
+    private void updatePlayerStateFields(PlayerState playerState, Long userId, Long trackId,
+                                         Integer progressMs, Boolean isPlaying, Boolean shuffleState, String repeatState, Integer volume) {
+
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException(new ErrorMessage(MessageType.NOT_FOUND, "User").prepareErrorMessage()));
         playerState.setUser(user);
-        
+
         if (trackId != null) {
             Track track = trackRepository.findById(trackId)
                     .orElseThrow(() -> new RuntimeException(new ErrorMessage(MessageType.NOT_FOUND, "Track").prepareErrorMessage()));
@@ -131,7 +147,7 @@ public class PlayerStateServiceImpl implements PlayerStateService {
         } else {
             playerState.setCurrentTrack(null);
         }
-        
+
         playerState.setProgressMs(progressMs);
         playerState.setIsPlaying(isPlaying);
         playerState.setShuffleState(shuffleState);

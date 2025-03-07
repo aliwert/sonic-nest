@@ -11,7 +11,6 @@ import com.aliwert.service.GenreService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.sql.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -60,7 +59,16 @@ public class GenreServiceImpl implements GenreService {
         dto.setId(genre.getId());
         dto.setName(genre.getName());
         dto.setDescription(genre.getDescription());
-        dto.setCreateTime((Date) genre.getCreatedTime());
+
+        // Handle creation time safely
+        if (genre.getCreatedTime() != null) {
+            if (genre.getCreatedTime() instanceof java.sql.Date) {
+                dto.setCreateTime((java.sql.Date) genre.getCreatedTime());
+            } else {
+                dto.setCreateTime(new java.sql.Date(genre.getCreatedTime().getTime()));
+            }
+        }
+
         return dto;
     }
 

@@ -20,35 +20,35 @@ public class GenreControllerImpl extends BaseController implements IGenreControl
 
     private final GenreService genreService;
 
-    @GetMapping
+    @GetMapping("/list")
     @Override
     @ResponseStatus(HttpStatus.OK)
     public RootEntity<List<DtoGenre>> getAllGenres() {
         return ok(genreService.getAllGenres());
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/list/{id}")
     @Override
     @ResponseStatus(HttpStatus.OK)
     public RootEntity<DtoGenre> getGenreById(@PathVariable Long id) {
         return ok(genreService.getGenreById(id));
     }
 
-    @PostMapping
+    @PostMapping("/create")
     @Override
     @ResponseStatus(HttpStatus.CREATED)
     public RootEntity<DtoGenre> createGenre(@RequestBody DtoGenreInsert dtoGenreInsert) {
         return ok(genreService.createGenre(dtoGenreInsert));
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/update/{id}")
     @Override
     @ResponseStatus(HttpStatus.OK)
     public RootEntity<DtoGenre> updateGenre(@PathVariable Long id, @RequestBody DtoGenreUpdate dtoGenreUpdate) {
         return ok(genreService.updateGenre(id, dtoGenreUpdate));
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/delete/{id}")
     @Override
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public RootEntity<Void> deleteGenre(@PathVariable Long id) {
