@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
 
 @RestController
+@RequestMapping("/api/v1/auth")
 public class AuthenticationControllerImpl extends BaseController implements IAuthenticationController {
 
     @Autowired

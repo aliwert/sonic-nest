@@ -34,7 +34,7 @@ public class CategoryControllerImpl extends BaseController implements ICategoryC
         return ok(categoryService.getCategoryById(id));
     }
 
-    @PostMapping
+    @PostMapping("/create")
     @Override
     @ResponseStatus(HttpStatus.CREATED)
     public RootEntity<DtoCategory> createCategory(@RequestBody DtoCategoryInsert dtoCategoryInsert) {

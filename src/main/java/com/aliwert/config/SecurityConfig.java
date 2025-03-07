@@ -19,9 +19,9 @@ import java.net.http.HttpRequest;
 @EnableWebSecurity
 public class SecurityConfig {
 
-    public static final String REGISTER = "/register";
-    public static final String AUTHENTICATE = "/authenticate";
-    public static final String REFRESH_TOKEN = "/refreshtoken";
+    public static final String REGISTER = "/api/v1/auth/register";
+    public static final String AUTHENTICATE = "/api/v1/auth/authenticate";
+    public static final String REFRESH_TOKEN = "/api/v1/auth/refreshtoken";
     public static final String[] SWAGGER_PATHS = {
             "/swagger-ui/**",
             "/v3/api-docs/**",

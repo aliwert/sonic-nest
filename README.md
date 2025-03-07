@@ -76,7 +76,7 @@ The API uses JWT (JSON Web Token) for authentication:
 
 1. Register a new user:
 
-   - POST /api/v1/register
+   - POST /api/v1/auth/register
 
      - Request Body:
        ```
@@ -88,7 +88,7 @@ The API uses JWT (JSON Web Token) for authentication:
 
 2. Login:
 
-   - POST /api/v1/authenticate
+   - POST /api/v1/auth/authenticate
 
      - Request Body:
        ```
@@ -105,7 +105,7 @@ The API uses JWT (JSON Web Token) for authentication:
 
 4. Refresh Token:
 
-   - POST /api/v1/refreshtoken
+   - POST /api/v1/auth/refreshtoken
 
      - Request Body:
        ```
@@ -119,9 +119,9 @@ The API uses JWT (JSON Web Token) for authentication:
 
 ### Authentication
 
-- **POST** `/api/v1/register` - Register a new user
-- **POST** `/api/v1/authenticate` - Authenticate and get tokens
-- **POST** `/api/v1/refreshtoken` - Refresh authentication token
+- **POST** `/api/v1/auth/register` - Register a new user
+- **POST** `/api/v1/auth/authenticate` - Authenticate and get tokens
+- **POST** `/api/v1/auth/refreshtoken` - Refresh authentication token
 
 ### Tracks
 
