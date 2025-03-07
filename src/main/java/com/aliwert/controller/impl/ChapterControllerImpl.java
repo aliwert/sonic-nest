@@ -20,35 +20,35 @@ public class ChapterControllerImpl extends BaseController implements IChapterCon
 
     private final ChapterService chapterService;
 
-    @GetMapping
+    @GetMapping("/list")
     @Override
     @ResponseStatus(HttpStatus.OK)
     public RootEntity<List<DtoChapter>> getAllChapters() {
         return ok(chapterService.getAllChapters());
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/list/{id}")
     @Override
     @ResponseStatus(HttpStatus.OK)
     public RootEntity<DtoChapter> getChapterById(@PathVariable Long id) {
         return ok(chapterService.getChapterById(id));
     }
 
-    @PostMapping
+    @PostMapping("/create")
     @Override
     @ResponseStatus(HttpStatus.CREATED)
     public RootEntity<DtoChapter> createChapter(@RequestBody DtoChapterInsert dtoChapterInsert) {
         return ok(chapterService.createChapter(dtoChapterInsert));
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/update/{id}")
     @Override
     @ResponseStatus(HttpStatus.OK)
     public RootEntity<DtoChapter> updateChapter(@PathVariable Long id, @RequestBody DtoChapterUpdate dtoChapterUpdate) {
         return ok(chapterService.updateChapter(id, dtoChapterUpdate));
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/delete/{id}")
     @Override
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public RootEntity<Void> deleteChapter(@PathVariable Long id) {

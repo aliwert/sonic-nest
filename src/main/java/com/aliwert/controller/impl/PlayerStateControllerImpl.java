@@ -33,13 +33,6 @@ public class PlayerStateControllerImpl extends BaseController implements IPlayer
     public RootEntity<DtoPlayerState> getPlayerStateById(@PathVariable Long id) {
         return ok(playerStateService.getPlayerStateById(id));
     }
-    
-    @GetMapping("/user/{userId}")
-    @Override
-    @ResponseStatus(HttpStatus.OK)
-    public RootEntity<DtoPlayerState> getPlayerStateByUserId(@PathVariable Long userId) {
-        return ok(playerStateService.getPlayerStateByUserId(userId));
-    }
 
     @PostMapping("/create")
     @Override
@@ -61,5 +54,12 @@ public class PlayerStateControllerImpl extends BaseController implements IPlayer
     public RootEntity<Void> deletePlayerState(@PathVariable Long id) {
         playerStateService.deletePlayerState(id);
         return null;
+    }
+    
+    @GetMapping("/user/{userId}")
+    @Override
+    @ResponseStatus(HttpStatus.OK)
+    public RootEntity<DtoPlayerState> getPlayerStateByUserId(@PathVariable Long userId) {
+        return ok(playerStateService.getPlayerStateByUserId(userId));
     }
 }

@@ -33,27 +33,6 @@ public class TrackControllerImpl extends BaseController implements ITrackControl
     public RootEntity<DtoTrack> getTrackById(@PathVariable Long id) {
         return ok(trackService.getTrackById(id));
     }
-    
-    @GetMapping("/album/{albumId}")
-    @Override
-    @ResponseStatus(HttpStatus.OK)
-    public RootEntity<List<DtoTrack>> getTracksByAlbumId(@PathVariable Long albumId) {
-        return ok(trackService.getTracksByAlbumId(albumId));
-    }
-    
-    @GetMapping("/genre/{genreId}")
-    @Override
-    @ResponseStatus(HttpStatus.OK)
-    public RootEntity<List<DtoTrack>> getTracksByGenreId(@PathVariable Long genreId) {
-        return ok(trackService.getTracksByGenreId(genreId));
-    }
-    
-    @GetMapping("/category/{categoryId}")
-    @Override
-    @ResponseStatus(HttpStatus.OK)
-    public RootEntity<List<DtoTrack>> getTracksByCategoryId(@PathVariable Long categoryId) {
-        return ok(trackService.getTracksByCategoryId(categoryId));
-    }
 
     @PostMapping("/create")
     @Override
@@ -68,7 +47,50 @@ public class TrackControllerImpl extends BaseController implements ITrackControl
     public RootEntity<DtoTrack> updateTrack(@PathVariable Long id, @RequestBody DtoTrackUpdate dtoTrackUpdate) {
         return ok(trackService.updateTrack(id, dtoTrackUpdate));
     }
+
+    @DeleteMapping("/delete/{id}")
+    @Override
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public RootEntity<Void> deleteTrack(@PathVariable Long id) {
+        trackService.deleteTrack(id);
+        return null;
+    }
+
+    @GetMapping("/album/{albumId}")
+    @Override
+    @ResponseStatus(HttpStatus.OK)
+    public RootEntity<List<DtoTrack>> getTracksByAlbumId(@PathVariable Long albumId) {
+        return ok(trackService.getTracksByAlbumId(albumId));
+    }
+
+    @GetMapping("/category/{categoryId}")
+    @Override
+    @ResponseStatus(HttpStatus.OK)
+    public RootEntity<List<DtoTrack>> getTracksByCategoryId(@PathVariable Long categoryId) {
+        return ok(trackService.getTracksByCategoryId(categoryId));
+    }
+
+    @PostMapping("/{trackId}/categories/{categoryId}")
+    @Override
+    @ResponseStatus(HttpStatus.OK)
+    public RootEntity<DtoTrack> addCategoryToTrack(@PathVariable Long trackId, @PathVariable Long categoryId) {
+        return ok(trackService.addCategoryToTrack(trackId, categoryId));
+    }
+
+    @DeleteMapping("/{trackId}/categories/{categoryId}")
+    @Override
+    @ResponseStatus(HttpStatus.OK)
+    public RootEntity<DtoTrack> removeCategoryFromTrack(@PathVariable Long trackId, @PathVariable Long categoryId) {
+        return ok(trackService.removeCategoryFromTrack(trackId, categoryId));
+    }
     
+    @GetMapping("/genre/{genreId}")
+    @Override
+    @ResponseStatus(HttpStatus.OK)
+    public RootEntity<List<DtoTrack>> getTracksByGenreId(@PathVariable Long genreId) {
+        return ok(trackService.getTracksByGenreId(genreId));
+    }
+
     @PostMapping("/{trackId}/genres/{genreId}")
     @Override
     @ResponseStatus(HttpStatus.OK)
@@ -81,27 +103,5 @@ public class TrackControllerImpl extends BaseController implements ITrackControl
     @ResponseStatus(HttpStatus.OK)
     public RootEntity<DtoTrack> removeGenreFromTrack(@PathVariable Long trackId, @PathVariable Long genreId) {
         return ok(trackService.removeGenreFromTrack(trackId, genreId));
-    }
-    
-    @PostMapping("/{trackId}/categories/{categoryId}")
-    @Override
-    @ResponseStatus(HttpStatus.OK)
-    public RootEntity<DtoTrack> addCategoryToTrack(@PathVariable Long trackId, @PathVariable Long categoryId) {
-        return ok(trackService.addCategoryToTrack(trackId, categoryId));
-    }
-    
-    @DeleteMapping("/{trackId}/categories/{categoryId}")
-    @Override
-    @ResponseStatus(HttpStatus.OK)
-    public RootEntity<DtoTrack> removeCategoryFromTrack(@PathVariable Long trackId, @PathVariable Long categoryId) {
-        return ok(trackService.removeCategoryFromTrack(trackId, categoryId));
-    }
-
-    @DeleteMapping("/delete/{id}")
-    @Override
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public RootEntity<Void> deleteTrack(@PathVariable Long id) {
-        trackService.deleteTrack(id);
-        return null;
     }
 }

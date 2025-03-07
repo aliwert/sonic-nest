@@ -19,9 +19,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class EpisodeControllerImpl extends BaseController implements IEpisodeController {
 
-
-    @Autowired
-    private EpisodeService episodeService;
+    private final EpisodeService episodeService;
 
     @GetMapping("/list")
     @Override

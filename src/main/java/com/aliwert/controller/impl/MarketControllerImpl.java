@@ -33,13 +33,6 @@ public class MarketControllerImpl extends BaseController implements IMarketContr
     public RootEntity<DtoMarket> getMarketById(@PathVariable Long id) {
         return ok(marketService.getMarketById(id));
     }
-    
-    @GetMapping("/code/{countryCode}")
-    @Override
-    @ResponseStatus(HttpStatus.OK)
-    public RootEntity<DtoMarket> getMarketByCountryCode(@PathVariable String countryCode) {
-        return ok(marketService.getMarketByCountryCode(countryCode));
-    }
 
     @PostMapping("/create")
     @Override
@@ -62,4 +55,13 @@ public class MarketControllerImpl extends BaseController implements IMarketContr
         marketService.deleteMarket(id);
         return null;
     }
+
+    @GetMapping("/code/{countryCode}")
+    @Override
+    @ResponseStatus(HttpStatus.OK)
+    public RootEntity<DtoMarket> getMarketByCountryCode(@PathVariable String countryCode) {
+        return ok(marketService.getMarketByCountryCode(countryCode));
+    }
+
+
 }

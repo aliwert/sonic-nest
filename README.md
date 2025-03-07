@@ -140,12 +140,11 @@ The API uses JWT (JSON Web Token) for authentication:
 
 ### Albums
 
-- **GET** `/api/v1/albumslist` - Get all albums
+- **GET** `/api/v1/albums/list` - Get all albums
 - **GET** `/api/v1/albums/list/{id}` - Get album by ID
 - **POST** `/api/v1/albums/create` - Create an album
 - **PUT** `/api/v1/albums/update/{id}` - Update an album
 - **DELETE** `/api/v1/albums/delete/{id}` - Delete an album
-- **GET** `/api/v1/albums/artist/{artistId}` - Get albums by artist
 
 ### Artists
 
@@ -229,6 +228,6 @@ The API uses JWT (JSON Web Token) for authentication:
 - **GET** `/api/v1/markets/list` - Get all markets
 - **GET** `/api/v1/markets/list/{id}` - Get market by ID
 - **POST** `/api/v1/markets/create` - Create a market
-- **GET** `/api/v1/markets/code/{countryCode}` - Get market by country code
 - **PUT** `/api/v1/markets/update/{id}` - Update a market
 - **DELETE** `/api/v1/markets/delete/{id}` - Delete a market
+- **GET** `/api/v1/markets/code/{countryCode}` - Get market by country code
