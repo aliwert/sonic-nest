@@ -16,6 +16,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -49,8 +51,8 @@ public class AlbumServiceImpl implements AlbumService {
     }
 
     @Override
-    public DtoAlbum updateAlbum(Long id,DtoAlbumUpdate dtoAlbumUpdate) {
-        Album album = albumRepository.findById(dtoAlbumUpdate.getId())
+    public DtoAlbum updateAlbum(Long id, DtoAlbumUpdate dtoAlbumUpdate) {
+        Album album = albumRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException(new ErrorMessage(MessageType.NOT_FOUND, "Album").prepareErrorMessage()));
         updateAlbumFromDto(album, dtoAlbumUpdate);
         return convertToDto(albumRepository.save(album));
@@ -67,32 +69,62 @@ public class AlbumServiceImpl implements AlbumService {
         dto.setTitle(album.getTitle());
         dto.setReleaseDate(album.getReleaseDate());
         dto.setImageUrl(album.getImageUrl());
-        dto.setArtistId(album.getArtist().getId());
-        dto.setGenreIds(album.getGenres().stream().map(Genre::getId).collect(Collectors.toList()));
+
+        // safely handle artist - might be null for a new album
+        if (album.getArtist() != null) {
+            dto.setArtistId(album.getArtist().getId());
+        }
+
+        // safely handle genres - might be null for a new album
+        if (album.getGenres() != null) {
+            dto.setGenreIds(album.getGenres().stream()
+                    .map(Genre::getId)
+                    .collect(Collectors.toList()));
+        } else {
+            dto.setGenreIds(Collections.emptyList());
+        }
+
+        // handle creation time if needed
+        if (album.getCreatedTime() != null) {
+            if (album.getCreatedTime() instanceof java.sql.Date) {
+                dto.setCreateTime((java.sql.Date) album.getCreatedTime());
+            } else {
+                dto.setCreateTime(new java.sql.Date(album.getCreatedTime().getTime()));
+            }
+        }
+
         return dto;
     }
 
     private void updateAlbumFromDto(Album album, Object dto) {
         if (dto instanceof DtoAlbumInsert insert) {
-            updateAlbumFields(album, insert.getTitle(), insert.getReleaseDate(), 
-                insert.getImageUrl(), insert.getArtistId(), insert.getGenreIds());
+            updateAlbumFields(album, insert.getTitle(), insert.getReleaseDate(),
+                    insert.getImageUrl(), insert.getArtistId(), insert.getGenreIds());
         } else if (dto instanceof DtoAlbumUpdate update) {
-            updateAlbumFields(album, update.getTitle(), update.getReleaseDate(), 
-                update.getImageUrl(), update.getArtistId(), update.getGenreIds());
+            updateAlbumFields(album, update.getTitle(), update.getReleaseDate(),
+                    update.getImageUrl(), update.getArtistId(), update.getGenreIds());
         }
     }
 
-    private void updateAlbumFields(Album album, String title, LocalDate releaseDate, 
-            String imageUrl, Long artistId, List<Long> genreIds) {
+    private void updateAlbumFields(Album album, String title, LocalDate releaseDate,
+                                   String imageUrl, Long artistId, List<Long> genreIds) {
         album.setTitle(title);
         album.setReleaseDate(releaseDate);
         album.setImageUrl(imageUrl);
-        
-        Artist artist = artistRepository.findById(artistId)
-                .orElseThrow(() -> new RuntimeException(new ErrorMessage(MessageType.NOT_FOUND, "Artist").prepareErrorMessage()));
-        album.setArtist(artist);
 
-        List<Genre> genres = genreRepository.findAllById(genreIds);
-        album.setGenres(genres);
+        // only set artist if artistId is not null
+        if (artistId != null) {
+            Artist artist = artistRepository.findById(artistId)
+                    .orElseThrow(() -> new RuntimeException(new ErrorMessage(MessageType.NOT_FOUND, "Artist").prepareErrorMessage()));
+            album.setArtist(artist);
+        }
+
+        // only set genres if genreIds is not null
+        if (genreIds != null && !genreIds.isEmpty()) {
+            List<Genre> genres = genreRepository.findAllById(genreIds);
+            album.setGenres(genres);
+        } else {
+            album.setGenres(new ArrayList<>());
+        }
     }
 }

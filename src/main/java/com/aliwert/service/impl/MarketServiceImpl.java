@@ -11,7 +11,6 @@ import com.aliwert.service.MarketService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.sql.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -34,7 +33,7 @@ public class MarketServiceImpl implements MarketService {
                 .orElseThrow(() -> new RuntimeException(new ErrorMessage(MessageType.NOT_FOUND, "Market").prepareErrorMessage()));
         return convertToDto(market);
     }
-    
+
     @Override
     public DtoMarket getMarketByCountryCode(String countryCode) {
         Market market = marketRepository.findByCountryCode(countryCode);
@@ -70,7 +69,16 @@ public class MarketServiceImpl implements MarketService {
         dto.setCountryCode(market.getCountryCode());
         dto.setCountryName(market.getCountryName());
         dto.setCurrency(market.getCurrency());
-        dto.setCreateTime((Date) market.getCreatedTime());
+
+        // Handle creation time safely
+        if (market.getCreatedTime() != null) {
+            if (market.getCreatedTime() instanceof java.sql.Date) {
+                dto.setCreateTime((java.sql.Date) market.getCreatedTime());
+            } else {
+                dto.setCreateTime(new java.sql.Date(market.getCreatedTime().getTime()));
+            }
+        }
+
         return dto;
     }
 

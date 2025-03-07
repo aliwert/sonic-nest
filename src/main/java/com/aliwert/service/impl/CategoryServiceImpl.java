@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.sql.Date;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -61,8 +62,23 @@ public class CategoryServiceImpl implements CategoryService {
         dto.setName(category.getName());
         dto.setDescription(category.getDescription());
         dto.setImageUrl(category.getImageUrl());
-        dto.setCreateTime((Date) category.getCreatedTime());
-        dto.setTrackIds(category.getTracks().stream().map(track -> track.getId()).collect(Collectors.toList()));
+
+        if (category.getCreatedTime() != null) {
+            if (category.getCreatedTime() instanceof java.sql.Date) {
+                dto.setCreateTime((java.sql.Date) category.getCreatedTime());
+            } else {
+                dto.setCreateTime(new java.sql.Date(category.getCreatedTime().getTime()));
+            }
+        }
+
+        if (category.getTracks() != null) {
+            dto.setTrackIds(category.getTracks().stream()
+                    .map(track -> track.getId())
+                    .collect(Collectors.toList()));
+        } else {
+            dto.setTrackIds(Collections.emptyList());
+        }
+
         return dto;
     }
 

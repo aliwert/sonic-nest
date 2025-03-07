@@ -13,7 +13,6 @@ import com.aliwert.service.ShowService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -23,7 +22,6 @@ import java.util.stream.Collectors;
 public class ShowServiceImpl implements ShowService {
 
     private final ShowRepository showRepository;
-
 
     @Override
     public List<DtoShow> getAllShows() {
@@ -66,9 +64,17 @@ public class ShowServiceImpl implements ShowService {
         dto.setDescription(show.getDescription());
         dto.setPublisher(show.getPublisher());
         dto.setImageUrl(show.getImageUrl());
-        dto.setCreateTime((Date) show.getCreatedTime());
-        
-        //! convert episodes to dtos (while avoiding circular ref)
+
+        // Handle creation time safely
+        if (show.getCreatedTime() != null) {
+            if (show.getCreatedTime() instanceof java.sql.Date) {
+                dto.setCreateTime((java.sql.Date) show.getCreatedTime());
+            } else {
+                dto.setCreateTime(new java.sql.Date(show.getCreatedTime().getTime()));
+            }
+        }
+
+        // Convert episodes to DTOs while avoiding circular references
         if (show.getEpisodes() != null) {
             List<DtoEpisode> episodeDtos = new ArrayList<>();
             for (Episode episode : show.getEpisodes()) {
@@ -80,13 +86,22 @@ public class ShowServiceImpl implements ShowService {
                 episodeDto.setAudioUrl(episode.getAudioUrl());
                 episodeDto.setReleaseDate(episode.getReleaseDate());
                 episodeDto.setImageUrl(episode.getImageUrl());
-                episodeDto.setCreateTime((Date) episode.getCreatedTime());
-                // don t set show to avoid circular ref
+
+                // Handle episode creation time safely
+                if (episode.getCreatedTime() != null) {
+                    if (episode.getCreatedTime() instanceof java.sql.Date) {
+                        episodeDto.setCreateTime((java.sql.Date) episode.getCreatedTime());
+                    } else {
+                        episodeDto.setCreateTime(new java.sql.Date(episode.getCreatedTime().getTime()));
+                    }
+                }
+
+                // Don't set show to avoid circular reference
                 episodeDtos.add(episodeDto);
             }
             dto.setEpisodes(episodeDtos);
         }
-        
+
         return dto;
     }
 

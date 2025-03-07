@@ -6,12 +6,14 @@ import com.aliwert.dto.update.DtoAudiobookUpdate;
 import com.aliwert.exception.ErrorMessage;
 import com.aliwert.exception.MessageType;
 import com.aliwert.model.Audiobook;
+import com.aliwert.model.BaseEntity;
 import com.aliwert.repository.AudiobookRepository;
 import com.aliwert.service.AudiobookService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.sql.Date;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -65,8 +67,23 @@ public class AudiobookServiceImpl implements AudiobookService {
         dto.setPublisher(audiobook.getPublisher());
         dto.setDuration(audiobook.getDuration());
         dto.setImageUrl(audiobook.getImageUrl());
-        dto.setCreateTime((Date) audiobook.getCreatedTime());
-        dto.setChapterIds(audiobook.getChapters().stream().map(chapter -> chapter.getId()).collect(Collectors.toList()));
+
+        if (audiobook.getCreatedTime() != null) {
+            if (audiobook.getCreatedTime() instanceof java.sql.Date) {
+                dto.setCreateTime((java.sql.Date) audiobook.getCreatedTime());
+            } else {
+                dto.setCreateTime(new java.sql.Date(audiobook.getCreatedTime().getTime()));
+            }
+        }
+
+        if (audiobook.getChapters() != null) {
+            dto.setChapterIds(audiobook.getChapters().stream()
+                    .map(BaseEntity::getId)
+                    .collect(Collectors.toList()));
+        } else {
+            dto.setChapterIds(Collections.emptyList());
+        }
+
         return dto;
     }
 
@@ -79,6 +96,11 @@ public class AudiobookServiceImpl implements AudiobookService {
             audiobook.setPublisher(insert.getPublisher());
             audiobook.setDuration(insert.getDuration());
             audiobook.setImageUrl(insert.getImageUrl());
+
+            if (audiobook.getChapters() == null) {
+                audiobook.setChapters(new ArrayList<>());
+            }
+
         } else if (dto instanceof DtoAudiobookUpdate update) {
             audiobook.setTitle(update.getTitle());
             audiobook.setAuthor(update.getAuthor());
