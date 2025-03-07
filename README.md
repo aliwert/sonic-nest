@@ -2,6 +2,10 @@
 
 - This project is a comprehensive REST API that mimics core like Spotify functionality, built with Spring Boot. It provides endpoints for managing music tracks, albums, artists, playlists, podcasts and more.
 
+## Database Diagram
+<img src="database/er-diagram.png" alt="er-diagram">
+
+
 ## Technologies Used
 
 - Java
