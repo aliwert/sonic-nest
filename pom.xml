@@ -9,10 +9,10 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.aliwert</groupId>
-	<artifactId>spotify-api</artifactId>
+	<artifactId>sonic-nest-api</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>spotify-api</name>
-	<description>Demo project for Spotify Api</description>
+	<name>sonic-nest-api</name>
+	<description>Demo project for Sonic Nest Api</description>
 	<url/>
 	<licenses>
 		<license/>

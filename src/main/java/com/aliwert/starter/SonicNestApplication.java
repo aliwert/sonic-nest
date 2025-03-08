@@ -10,10 +10,10 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @ComponentScan(basePackages = {"com.aliwert"})
 @EnableJpaRepositories(basePackages = {"com.aliwert"})
 @SpringBootApplication
-public class SpotifyApiApplication {
+public class SonicNestApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(SpotifyApiApplication.class, args);
+		SpringApplication.run(SonicNestApplication.class, args);
 	}
 
 }
