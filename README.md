@@ -232,3 +232,22 @@ The API uses JWT (JSON Web Token) for authentication:
 - **PUT** `/api/v1/markets/update/{id}` - Update a market
 - **DELETE** `/api/v1/markets/delete/{id}` - Delete a market
 - **GET** `/api/v1/markets/code/{countryCode}` - Get market by country code
+
+### Podcasts
+
+- **GET** `/api/v1/podcasts/list` - Get all podcasts
+- **GET** `/api/v1/podcasts/list/{id}` - Get podcast by ID
+- **POST** `/api/v1/podcasts/create` - Create a podcast
+- **PUT** `/api/v1/podcasts/update/{id}` - Update a podcast
+- **DELETE** `/api/v1/podcasts/delete/{id}` - Delete a podcast
+- **POST** `/api/v1/podcasts/{podcastId}/categories/{categoryId}` - Add category to podcast
+- **DELETE** `/api/v1/podcasts/{podcastId}/categories/{categoryId}` - Remove category from podcast
+
+### Podcast Episodes
+
+- **GET** `/api/v1/podcast-episodes/list` - Get all podcast episodes
+- **GET** `/api/v1/podcast-episodes/list/{id}` - Get podcast episode by ID
+- **POST** `/api/v1/podcast-episodes/create` - Create a podcast episode
+- **PUT** `/api/v1/podcast-episodes/update/{id}` - Update a podcast episode
+- **DELETE** `/api/v1/podcast-episodes/delete/{id}` - Delete a podcast episode
+- **GET** `/api/v1/podcast-episodes/podcast/{podcastId}` - Get episodes by podcast ID
