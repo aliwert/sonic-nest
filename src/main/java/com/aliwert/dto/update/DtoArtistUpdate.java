@@ -1,6 +1,5 @@
 package com.aliwert.dto.update;
 
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 

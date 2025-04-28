@@ -9,14 +9,12 @@ import com.aliwert.exception.ErrorMessage;
 import com.aliwert.exception.MessageType;
 import com.aliwert.model.Category;
 import com.aliwert.model.Podcast;
-import com.aliwert.model.PodcastEpisode;
 import com.aliwert.repository.CategoryRepository;
 import com.aliwert.repository.PodcastRepository;
 import com.aliwert.service.PodcastService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;

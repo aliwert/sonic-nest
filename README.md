@@ -71,6 +71,47 @@ mvn spring-boot:run
 
 The application will be accessible at `http://localhost:8080`.
 
+## Docker Setup
+
+Sonic Nest API can be easily deployed using Docker containers. This simplifies the setup process and ensures consistent environments across different systems.
+
+### Prerequisites
+
+- Docker Engine 19.03.0+
+- Docker Compose 1.27.0+
+
+### Docker Configuration
+
+The project includes Docker configuration files:
+
+- `Dockerfile`: Defines how the application is built into a container image
+- `docker-compose.yml`: Orchestrates the application and database containers
+- `.dockerignore`: Specifies files that should be excluded from the Docker build
+
+### Running with Docker
+
+1. **Build and start the containers**:
+
+   ```bash
+   docker-compose up -d
+   ```
+
+   This will:
+
+- Build the Sonic Nest API application image
+- Start a PostgreSQL database container
+- Connect the application to the database
+- Make the API available at `http://localhost:8080`
+
+2. View Logs:
+   ```bash
+   docker-compose logs -f
+   ```
+3. Stop the containers:
+   ```bash
+   docker-compose down
+   ```
+
 ## Authentication
 
 The API uses JWT (JSON Web Token) for authentication:
@@ -251,3 +292,16 @@ The API uses JWT (JSON Web Token) for authentication:
 - **PUT** `/api/v1/podcast-episodes/update/{id}` - Update a podcast episode
 - **DELETE** `/api/v1/podcast-episodes/delete/{id}` - Delete a podcast episode
 - **GET** `/api/v1/podcast-episodes/podcast/{podcastId}` - Get episodes by podcast ID
+
+### Payments
+
+- **GET** `/api/v1/payments/list` - Get all payments
+- **GET** `/api/v1/payments/list/{id}` - Get payment by ID
+- **GET** `/api/v1/payments/user/{userId}` - Get payments by user ID
+- **GET** `/api/v1/payments/transaction/{transactionId}` - Get payment by transaction ID
+- **GET** `/api/v1/payments/status/{status}` - Get payments by status (PENDING, COMPLETED, FAILED, REFUNDED, CANCELLED)
+- **POST** `/api/v1/payments/create` - Create a payment
+- **PUT** `/api/v1/payments/update/{id}` - Update a payment
+- **POST** `/api/v1/payments/process/{id}` - Process a payment (change status from PENDING to COMPLETED)
+- **POST** `/api/v1/payments/refund/{id}` - Refund a payment (change status from COMPLETED to REFUNDED)
+- **DELETE** `/api/v1/payments/delete/{id}` - Delete a payment

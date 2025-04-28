@@ -1,7 +1,6 @@
 package com.aliwert.exception;
 
 
-import com.aliwert.model.Album;
 import lombok.*;
 
 @Data
