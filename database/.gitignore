@@ -1,0 +1,25 @@
+# Database backup files
+*.sql.backup
+*.dump
+*.bak
+
+# Log files
+*.log
+
+# Temporary files
+*.tmp
+*.temp
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor files
+*.swp
+*.swo
+*~
+
+# Environment-specific configs (if any are created)
+local-config.sh
+prod-config.sh
+.env
