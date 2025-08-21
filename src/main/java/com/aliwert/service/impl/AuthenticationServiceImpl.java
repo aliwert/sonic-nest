@@ -12,7 +12,6 @@ import com.aliwert.exception.MessageType;
 import com.aliwert.jwt.JwtService;
 import com.aliwert.model.RefreshToken;
 import com.aliwert.repository.IRefreshTokenRepository;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -47,6 +46,7 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
     private User createUser(AuthRequest req) {
         User user = new User();
         user.setUsername(req.getUsername());
+        user.setEmail(req.getEmail());
         user.setPassword(bCryptPasswordEncoder.encode(req.getPassword()));
         user.setCreatedTime(new Date());
         return user;
@@ -55,14 +55,27 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
 
     @Override
     public DtoUser register(AuthRequest req) {
-        DtoUser user = new DtoUser();
-        User savedUser =  userRepository.save(createUser(req)); 
+        // check if username already exists
+        if (userRepository.existsByUsername(req.getUsername())) {
+            throw new BaseException(new ErrorMessage(MessageType.ALREADY_EXISTS, "Username already exists: " + req.getUsername()));
+        }
 
-        BeanUtils.copyProperties(savedUser, user);
+        // check if email already exists
+        if (userRepository.existsByEmail(req.getEmail())) {
+            throw new BaseException(new ErrorMessage(MessageType.ALREADY_EXISTS, "Email already exists: " + req.getEmail()));
+        }
+        
+        User savedUser = userRepository.save(createUser(req)); 
+        
+        DtoUser user = new DtoUser();
+        user.setId(savedUser.getId());
+        user.setUsername(savedUser.getUsername());
+        user.setEmail(savedUser.getEmail());
+        user.setCreateTime(savedUser.getCreatedTime() instanceof java.sql.Date ? 
+            (java.sql.Date) savedUser.getCreatedTime() : 
+            new java.sql.Date(savedUser.getCreatedTime().getTime()));
        
         return user;
-
-
     }
 
     private RefreshToken createRefreshToken(User user) {

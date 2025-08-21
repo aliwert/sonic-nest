@@ -1,13 +1,11 @@
 package com.aliwert.service.impl;
 
-import com.aliwert.dto.DtoAlbum;
-import com.aliwert.dto.DtoCategory;
-import com.aliwert.dto.DtoGenre;
 import com.aliwert.dto.DtoTrack;
 import com.aliwert.dto.insert.DtoTrackInsert;
 import com.aliwert.dto.update.DtoTrackUpdate;
 import com.aliwert.exception.ErrorMessage;
 import com.aliwert.exception.MessageType;
+import com.aliwert.mapper.TrackMapper;
 import com.aliwert.model.Album;
 import com.aliwert.model.Category;
 import com.aliwert.model.Genre;
@@ -22,7 +20,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -32,62 +29,86 @@ public class TrackServiceImpl implements TrackService {
     private final AlbumRepository albumRepository;
     private final GenreRepository genreRepository;
     private final CategoryRepository categoryRepository;
-    private final AlbumServiceImpl albumService;
-    private final GenreServiceImpl genreService;
-    private final CategoryServiceImpl categoryService;
+    private final TrackMapper trackMapper;
 
     @Override
     public List<DtoTrack> getAllTracks() {
-        return trackRepository.findAll().stream()
-                .map(this::convertToDto)
-                .collect(Collectors.toList());
+        return trackMapper.toDtoList(trackRepository.findAll());
     }
 
     @Override
     public DtoTrack getTrackById(Long id) {
         Track track = trackRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException(new ErrorMessage(MessageType.NOT_FOUND, "Track").prepareErrorMessage()));
-        return convertToDto(track);
+        return trackMapper.toDto(track);
     }
 
     @Override
     public List<DtoTrack> getTracksByAlbumId(Long albumId) {
-        return trackRepository.findByAlbumId(albumId).stream()
-                .map(this::convertToDto)
-                .collect(Collectors.toList());
+        return trackMapper.toDtoList(trackRepository.findByAlbumId(albumId));
     }
 
     @Override
     public List<DtoTrack> getTracksByGenreId(Long genreId) {
         Genre genre = genreRepository.findById(genreId)
                 .orElseThrow(() -> new RuntimeException(new ErrorMessage(MessageType.NOT_FOUND, "Genre").prepareErrorMessage()));
-        return trackRepository.findByGenresContaining(genre).stream()
-                .map(this::convertToDto)
-                .collect(Collectors.toList());
+        return trackMapper.toDtoList(trackRepository.findByGenresContaining(genre));
     }
 
     @Override
     public List<DtoTrack> getTracksByCategoryId(Long categoryId) {
         Category category = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new RuntimeException(new ErrorMessage(MessageType.NOT_FOUND, "Category").prepareErrorMessage()));
-        return trackRepository.findByCategoriesContaining(category).stream()
-                .map(this::convertToDto)
-                .collect(Collectors.toList());
+        return trackMapper.toDtoList(trackRepository.findByCategoriesContaining(category));
     }
 
     @Override
     public DtoTrack createTrack(DtoTrackInsert dtoTrackInsert) {
-        Track track = new Track();
-        updateTrackFromDto(track, dtoTrackInsert);
-        return convertToDto(trackRepository.save(track));
+        Track track = trackMapper.toEntity(dtoTrackInsert);
+        
+        if (dtoTrackInsert.getAlbumId() != null) {
+            Album album = albumRepository.findById(dtoTrackInsert.getAlbumId())
+                    .orElseThrow(() -> new RuntimeException(new ErrorMessage(MessageType.NOT_FOUND, "Album").prepareErrorMessage()));
+            track.setAlbum(album);
+        }
+
+        if (dtoTrackInsert.getGenreIds() != null && !dtoTrackInsert.getGenreIds().isEmpty()) {
+            List<Genre> genres = genreRepository.findAllById(dtoTrackInsert.getGenreIds());
+            track.setGenres(genres);
+        }
+
+        if (dtoTrackInsert.getCategoryIds() != null && !dtoTrackInsert.getCategoryIds().isEmpty()) {
+            List<Category> categories = categoryRepository.findAllById(dtoTrackInsert.getCategoryIds());
+            track.setCategories(categories);
+        }
+        
+        return trackMapper.toDto(trackRepository.save(track));
     }
 
     @Override
     public DtoTrack updateTrack(Long id, DtoTrackUpdate dtoTrackUpdate) {
         Track track = trackRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException(new ErrorMessage(MessageType.NOT_FOUND, "Track").prepareErrorMessage()));
-        updateTrackFromDto(track, dtoTrackUpdate);
-        return convertToDto(trackRepository.save(track));
+        
+        trackMapper.updateEntityFromDto(dtoTrackUpdate, track);
+        
+        if (dtoTrackUpdate.getAlbumId() != null) {
+            Album album = albumRepository.findById(dtoTrackUpdate.getAlbumId())
+                    .orElseThrow(() -> new RuntimeException(new ErrorMessage(MessageType.NOT_FOUND, "Album").prepareErrorMessage()));
+            track.setAlbum(album);
+        }
+
+        if (dtoTrackUpdate.getGenreIds() != null) {
+            List<Genre> genres = genreRepository.findAllById(dtoTrackUpdate.getGenreIds());
+            track.setGenres(genres);
+        }
+
+        if (dtoTrackUpdate.getCategoryIds() != null) {
+            List<Category> categories = categoryRepository.findAllById(dtoTrackUpdate.getCategoryIds());
+            track.setCategories(categories);
+        }
+        
+        return trackMapper.toDto(trackRepository.save(track));
     }
 
     @Override
@@ -111,7 +132,7 @@ public class TrackServiceImpl implements TrackService {
             trackRepository.save(track);
         }
 
-        return convertToDto(track);
+        return trackMapper.toDto(track);
     }
 
     @Override
@@ -126,7 +147,7 @@ public class TrackServiceImpl implements TrackService {
             trackRepository.save(track);
         }
 
-        return convertToDto(track);
+        return trackMapper.toDto(track);
     }
 
     @Override
@@ -145,7 +166,7 @@ public class TrackServiceImpl implements TrackService {
             trackRepository.save(track);
         }
 
-        return convertToDto(track);
+        return trackMapper.toDto(track);
     }
 
     @Override
@@ -160,103 +181,6 @@ public class TrackServiceImpl implements TrackService {
             trackRepository.save(track);
         }
 
-        return convertToDto(track);
-    }
-
-    public DtoTrack convertToDto(Track track) {
-        DtoTrack dto = new DtoTrack();
-        dto.setId(track.getId());
-        dto.setTitle(track.getTitle());
-        dto.setDuration(track.getDuration());
-        dto.setAudioUrl(track.getAudioUrl());
-
-        if (track.getCreatedTime() != null) {
-            if (track.getCreatedTime() instanceof java.sql.Date) {
-                dto.setCreateTime((java.sql.Date) track.getCreatedTime());
-            } else {
-                dto.setCreateTime(new java.sql.Date(track.getCreatedTime().getTime()));
-            }
-        }
-
-        // album
-        if (track.getAlbum() != null) {
-            DtoAlbum albumDto = new DtoAlbum();
-            albumDto.setId(track.getAlbum().getId());
-            albumDto.setTitle(track.getAlbum().getTitle());
-            albumDto.setReleaseDate(track.getAlbum().getReleaseDate());
-            albumDto.setImageUrl(track.getAlbum().getImageUrl());
-
-            dto.setAlbum(albumDto);
-        }
-
-        if (track.getGenres() != null) {
-            List<DtoGenre> genres = track.getGenres().stream().map(genre -> {
-                DtoGenre genreDto = new DtoGenre();
-                genreDto.setId(genre.getId());
-                genreDto.setName(genre.getName());
-                genreDto.setDescription(genre.getDescription());
-                return genreDto;
-            }).collect(Collectors.toList());
-            dto.setGenres(genres);
-        }
-
-        if (track.getCategories() != null) {
-            List<DtoCategory> categories = track.getCategories().stream().map(category -> {
-                DtoCategory categoryDto = new DtoCategory();
-                categoryDto.setId(category.getId());
-                categoryDto.setName(category.getName());
-                categoryDto.setDescription(category.getDescription());
-                categoryDto.setImageUrl(category.getImageUrl());
-
-                return categoryDto;
-            }).collect(Collectors.toList());
-            dto.setCategories(categories);
-        }
-        return dto;
-    }
-
-    private void updateTrackFromDto(Track track, Object dto) {
-        if (dto instanceof DtoTrackInsert insert) {
-            track.setTitle(insert.getTitle());
-            track.setDuration(insert.getDuration());
-            track.setAudioUrl(insert.getAudioUrl());
-
-            if (insert.getAlbumId() != null) {
-                Album album = albumRepository.findById(insert.getAlbumId())
-                        .orElseThrow(() -> new RuntimeException(new ErrorMessage(MessageType.NOT_FOUND, "Album").prepareErrorMessage()));
-                track.setAlbum(album);
-            }
-
-            if (insert.getGenreIds() != null && !insert.getGenreIds().isEmpty()) {
-                List<Genre> genres = genreRepository.findAllById(insert.getGenreIds());
-                track.setGenres(genres);
-            }
-
-            if (insert.getCategoryIds() != null && !insert.getCategoryIds().isEmpty()) {
-                List<Category> categories = categoryRepository.findAllById(insert.getCategoryIds());
-                track.setCategories(categories);
-            }
-
-        } else if (dto instanceof DtoTrackUpdate update) {
-            track.setTitle(update.getTitle());
-            track.setDuration(update.getDuration());
-            track.setAudioUrl(update.getAudioUrl());
-
-            if (update.getAlbumId() != null) {
-                Album album = albumRepository.findById(update.getAlbumId())
-                        .orElseThrow(() -> new RuntimeException(new ErrorMessage(MessageType.NOT_FOUND, "Album").prepareErrorMessage()));
-                track.setAlbum(album);
-            }
-
-            if (update.getGenreIds() != null) {
-                List<Genre> genres = genreRepository.findAllById(update.getGenreIds());
-                track.setGenres(genres);
-            }
-
-            if (update.getCategoryIds() != null) {
-                List<Category> categories = categoryRepository.findAllById(update.getCategoryIds());
-                track.setCategories(categories);
-            }
-        }
+        return trackMapper.toDto(track);
     }
 }

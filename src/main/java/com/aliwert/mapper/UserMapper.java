@@ -10,7 +10,6 @@ import java.util.List;
 public interface UserMapper extends BaseMapper {
 
     @Mapping(target = "createTime", source = "createdTime", qualifiedByName = "dateToSqlDate")
-    @Mapping(target = "password", ignore = true) // don't include password in DTO
     DtoUser toDto(User user);
 
     List<DtoUser> toDtoList(List<User> users);

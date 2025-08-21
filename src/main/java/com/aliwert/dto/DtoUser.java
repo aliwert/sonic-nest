@@ -9,6 +9,6 @@ public class DtoUser extends DtoBaseEntity {
 
     private String username;
 
-    private String password;
+    private String email;
     
 }
