@@ -24,6 +24,9 @@ public class Album extends BaseEntity {
     @OneToMany(mappedBy = "album")
     private List<Track> tracks;
 
+    @OneToMany(mappedBy = "album")
+    private List<Video> videos;
+
     @ManyToMany
     @JoinTable(
         name = "album_genres",
